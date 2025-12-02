@@ -1,102 +1,112 @@
-import React from "react";
-import { apiEndpoints } from "./config/endpoints";
-import type { ApiEndpoint } from "./types/api";
-import { EndpointCard } from "./components/EndpointCard";
-import { ApiDialog } from "./components/ApiDialog";
+import React, { useRef, useEffect } from "react";
+import { ThemeToggle } from "./components/ThemeToggle";
+import { ChatMessage } from "./components/ChatMessage";
+import { ChatInput } from "./components/ChatInput";
+import { useChat } from "./hooks/useChat";
 
-// Top-level application shell rendering the landing page and endpoint grid.
+// Main chat application component with ChatGPT-like interface.
 export default function App() {
-  const [selected, setSelected] = React.useState<ApiEndpoint | null>(null);
-  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const { messages, loading, error, sendMessage } = useChat();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const handleOpen = (endpoint: ApiEndpoint) => {
-    setSelected(endpoint);
-    setDialogOpen(true);
-  };
+  // Auto-scroll to bottom when new messages arrive.
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-  const handleDialogChange = (open: boolean) => {
-    setDialogOpen(open);
-    if (!open) {
-      setSelected(null);
-    }
-  };
+  const showWelcome = messages.length === 0;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <div className="pointer-events-none fixed inset-0 bg-gradient-radial opacity-70" />
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-5xl flex-col gap-10 px-4 pb-16 pt-12 md:px-8 md:pt-16">
-        <header className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-4">
-            <p className="inline-flex items-center rounded-full bg-slate-900/80 px-3 py-1 text-[11px] font-medium text-slate-300 ring-1 ring-slate-700/70 backdrop-blur-xs">
-              <span className="mr-2 h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_0_4px_rgba(52,211,153,0.55)]" />
-              FastAPI · OpenAI · Vercel-ready
-            </p>
-            <div>
-              <h1 className="text-balance text-3xl font-semibold tracking-tight text-slate-50 sm:text-4xl md:text-5xl">
-                My First LLM-powered Application with Vercel
+    <div className="flex h-screen flex-col bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40 dark:bg-slate-950">
+      <article className="flex h-full flex-col">
+        {/* Header with centered title and theme toggle */}
+        <header className="relative flex items-center justify-center border-b border-slate-200/80 bg-white/80 backdrop-blur-sm px-4 py-3 shadow-sm dark:border-slate-800 dark:bg-slate-900/95 md:px-6">
+          <div className="flex items-start gap-3">
+            <span className="text-4xl md:text-5xl leading-none">💡</span>
+            <div className="text-center">
+              <h1 className="text-lg font-bold text-slate-900 dark:text-slate-100 md:text-xl">
+                MindWave AI - Your AI Support Coach for a Stronger Mind
               </h1>
-              <p className="mt-3 max-w-xl text-sm text-slate-300 md:text-base">
-                A clean, modern control surface for your supportive mental coach
-                backend. Explore each API endpoint, inspect responses, and feel
-                confident it&apos;s ready to ship.
+              <p className="text-xs text-slate-600 dark:text-slate-400 md:text-sm">
+                &quot;Helping your mind breathe a little easier.&quot;
               </p>
             </div>
           </div>
-          <div className="glass-surface animate-float-slow w-full max-w-xs rounded-3xl p-4 text-xs text-slate-200 md:text-sm">
-            <p className="font-semibold text-slate-100">
-              Backend connection
-            </p>
-            <p className="mt-1 text-slate-300">
-              This UI talks to your FastAPI server running at:
-            </p>
-            <p className="mt-2 font-mono text-[11px] text-emerald-300">
-              {import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000"}
-            </p>
-            <p className="mt-3 text-[11px] text-slate-400">
-              Make sure the backend is running before you click any of the
-              endpoint cards.
-            </p>
+          <div className="absolute right-4 md:right-6">
+            <ThemeToggle />
           </div>
         </header>
 
-        <main className="space-y-4">
-          <section>
-            <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-400">
-              Backend endpoints, TRY ME!
-            </h2>
-            <p className="text-sm text-slate-300">Click on the endpoint you want to try and see the response.</p>
-          </section>
+        {/* Chat messages area */}
+        <main className="flex-1 overflow-y-auto bg-gradient-to-b from-transparent to-blue-50/20 px-4 py-6 dark:bg-transparent md:px-6">
+          <div className="mx-auto max-w-3xl">
+            {showWelcome ? (
+              <div className="flex min-h-[calc(100vh-200px)] flex-col items-center justify-center">
+                <p className="mb-8 text-center text-lg font-medium text-slate-700 dark:text-slate-300">
+                  Hi! It&apos;s good to have you here. What&apos;s on your mind
+                  today?
+                </p>
+                {/* Chat input positioned below welcome message */}
+                <div className="w-full max-w-2xl">
+                  <ChatInput
+                    onSend={sendMessage}
+                    disabled={loading}
+                    placeholder="Type your message..."
+                  />
+                </div>
+              </div>
+            ) : (
+              <>
+                {messages.map((message) => (
+                  <ChatMessage key={message.id} message={message} />
+                ))}
 
-          <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {apiEndpoints.map((endpoint) => (
-              <EndpointCard
-                key={endpoint.id}
-                endpoint={endpoint}
-                onClick={() => handleOpen(endpoint)}
-              />
-            ))}
-          </section>
+                {loading && (
+                  <div className="mb-4 flex justify-start">
+                    <div className="rounded-2xl bg-white/90 backdrop-blur-sm px-4 py-3 shadow-sm dark:bg-slate-800">
+                      <div className="flex gap-1">
+                        <span className="h-2 w-2 animate-bounce rounded-full bg-slate-500 dark:bg-slate-400 [animation-delay:-0.3s]" />
+                        <span className="h-2 w-2 animate-bounce rounded-full bg-slate-500 dark:bg-slate-400 [animation-delay:-0.15s]" />
+                        <span className="h-2 w-2 animate-bounce rounded-full bg-slate-500 dark:bg-slate-400" />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {error && (
+                  <div className="mb-4 rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-800 dark:bg-red-950/50 dark:text-red-200">
+                    <p className="font-semibold">Error</p>
+                    <p className="mt-1">{error}</p>
+                  </div>
+                )}
+
+                <div ref={messagesEndRef} />
+              </>
+            )}
+          </div>
         </main>
 
-        <footer className="mt-auto border-t border-slate-800/70 pt-4 text-[11px] text-slate-500 flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
-          <p>
-            Built with React, Vite, TailwindCSS, and shadcn-inspired components.
-            Ready to be deployed on Vercel once your backend is live.
-          </p>
-          <p className="text-[10px] tracking-[0.24em] uppercase text-slate-500/70">
-            by{" "}
-            <span className="font-semibold text-slate-300/80">
-              Bharath Markande
-            </span>
-          </p>
-        </footer>
+        {/* Chat input at bottom when messages exist - stays fixed at bottom */}
+        {!showWelcome && (
+          <div className="border-t border-slate-300/80 bg-white/80 backdrop-blur-sm shadow-lg dark:border-slate-700 dark:bg-slate-900/95 px-4 md:px-6">
+            <div className="mx-auto max-w-3xl">
+              <ChatInput
+                onSend={sendMessage}
+                disabled={loading}
+                placeholder="Type your message..."
+              />
+            </div>
+          </div>
+        )}
+      </article>
 
-        <ApiDialog
-          open={dialogOpen}
-          onOpenChange={handleDialogChange}
-          endpoint={selected}
-        />
-      </div>
+      {/* Footer */}
+      <footer className="border-t border-slate-200/80 bg-white/80 backdrop-blur-sm px-4 py-3 text-center text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900/95 dark:text-slate-400 md:px-6">
+        <p>
+          My First LLM-Powered Application 🚀🚀🚀 — Built for the AI Engineering
+          Challenge by Bharath Markande
+        </p>
+      </footer>
     </div>
   );
 }
