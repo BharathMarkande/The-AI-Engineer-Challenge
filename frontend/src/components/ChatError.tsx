@@ -15,7 +15,7 @@ export function ChatError({ message }: ChatErrorProps) {
         may greet you with an error message instead of actual results.
       </p>
       <p className="mt-2 text-xs text-red-700 dark:text-red-200">
-        Error from OpenAI API: {message}
+        Error from Server or OpenAI API: {message}
       </p>
     </div>
   );

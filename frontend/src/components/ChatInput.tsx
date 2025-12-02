@@ -1,5 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 
+const SUGGESTED_PROMPTS: string[] = [
+  "I’m feeling overwhelmed today. Can you guide me through a calming exercise and help me reframe what’s weighing on me?",
+  "I have a goal in mind but I’m stuck. Can you help me break it into simple, actionable steps and keep me motivated?",
+  "I’m dealing with some difficult emotions right now. Can you help me understand them and find a healthy way to process them?",
+  "Let’s do a quick mental health check-in. Ask me the right questions to understand how I’m doing today.",
+  "I’m struggling to make a decision. Can you help me explore my options and understand what aligns best with my values?",
+  "I want to build a stronger mindset. Can you suggest habits, perspectives, or routines that would help me grow?"
+];
+
 interface ChatInputProps {
   onSend: (message: string) => void;
   disabled?: boolean;
@@ -13,6 +22,7 @@ export function ChatInput({
   placeholder = "Type your message..."
 }: ChatInputProps) {
   const [message, setMessage] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Auto-resize textarea to fit content.
@@ -53,11 +63,37 @@ export function ChatInput({
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
+          onFocus={() => setShowSuggestions(true)}
+          onBlur={() => setShowSuggestions(false)}
           placeholder={placeholder}
           disabled={disabled}
           rows={1}
           className="w-full resize-none border-0 bg-transparent text-sm text-slate-900 placeholder:text-slate-500 focus:outline-none dark:text-slate-100 dark:placeholder:text-slate-400"
         />
+        {showSuggestions && !disabled && !message.trim() && (
+          <div className="mt-3 space-y-1.5 rounded-xl border border-slate-200 bg-slate-50/90 p-2 text-xs text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200">
+            <p className="mb-1 font-semibold text-slate-800 dark:text-slate-100">
+              Try one of these to get started:
+            </p>
+            <div className="flex flex-col gap-1 max-h-44 overflow-y-auto pr-1">
+              {SUGGESTED_PROMPTS.map((prompt) => (
+                <button
+                  key={prompt}
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => {
+                    setMessage(prompt);
+                    setShowSuggestions(false);
+                    textareaRef.current?.focus();
+                  }}
+                  className="rounded-lg bg-white/80 px-2 py-1 text-left text-[11px] leading-snug text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:bg-slate-800/80 dark:text-slate-200 dark:hover:bg-slate-700"
+                >
+                  {prompt}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
       <button
         type="submit"
