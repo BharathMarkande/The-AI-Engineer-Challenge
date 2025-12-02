@@ -36,11 +36,11 @@ export default function App() {
         </header>
 
         {/* Chat messages area */}
-        <main className="flex-1 overflow-y-auto bg-gradient-to-b from-transparent to-blue-50/20 px-4 py-6 dark:bg-transparent md:px-6">
+        <main className="relative flex-1 overflow-y-auto bg-gradient-to-b from-transparent to-blue-50/20 px-4 pb-6 pt-16 dark:bg-transparent md:px-6">
+          <div className="absolute right-4 top-4 z-10 md:right-6">
+            <ThemeToggle />
+          </div>
           <div className="mx-auto max-w-3xl">
-            <div className="mb-4 flex justify-end">
-              <ThemeToggle />
-            </div>
             {showWelcome ? (
               <div className="flex min-h-[calc(100vh-200px)] flex-col items-center justify-center">
                 <p className="mb-8 text-center text-lg font-medium text-slate-700 dark:text-slate-300">
@@ -106,5 +106,3 @@ export default function App() {
     </div>
   );
 }
-
-
