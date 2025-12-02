@@ -1,12 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 
 const SUGGESTED_PROMPTS: string[] = [
-  "I’m feeling overwhelmed today. Can you guide me through a calming exercise and help me reframe what’s weighing on me?",
-  "I have a goal in mind but I’m stuck. Can you help me break it into simple, actionable steps and keep me motivated?",
-  "I’m dealing with some difficult emotions right now. Can you help me understand them and find a healthy way to process them?",
-  "Let’s do a quick mental health check-in. Ask me the right questions to understand how I’m doing today.",
-  "I’m struggling to make a decision. Can you help me explore my options and understand what aligns best with my values?",
-  "I want to build a stronger mindset. Can you suggest habits, perspectives, or routines that would help me grow?"
+  "I want to build a stronger mindset. Give 3 habits to build a stronger mindset",
+  "I’m overwhelmed. Can you guide a brief calming exercise and help reframe it",
+  "I’m stuck on a goal—help me break it into simple steps and stay motivated",
+  "Give me a quick mental check-in with a few questions",
+  "I’m stuck on a decision—help me explore options and choose what aligns with my values"
 ];
 
 interface ChatInputProps {

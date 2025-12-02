@@ -29,12 +29,15 @@ export function useChat() {
     }));
 
     try {
+      // Append "-keep it brief" to the message sent to backend
+      const messageToSend = `${content} -keep it brief`;
+      
       const response = await fetch(`${API_BASE_URL}/api/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ message: content })
+        body: JSON.stringify({ message: messageToSend })
       });
 
       if (!response.ok) {
