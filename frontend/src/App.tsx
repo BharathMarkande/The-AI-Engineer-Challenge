@@ -98,7 +98,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="border-t border-slate-200/80 bg-white/80 backdrop-blur-sm px-4 py-3 text-center text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900/95 dark:text-slate-400 md:px-6">
-        <p>
+        <p className="font-semibold">
           My First LLM-Powered Application 🚀🚀🚀 — Built for the AI Engineering
           Challenge by Bharath Markande
         </p>
