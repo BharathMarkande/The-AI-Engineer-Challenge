@@ -1,10 +1,14 @@
 import { useState, useCallback } from "react";
 import type { ChatMessage, ChatState } from "../types/chat";
 
+//const API_BASE_URL = "http://localhost:8000";
+
 //const API_BASE_URL =
   //import.meta.env.VITE_API_BASE_URL?.toString() ?? "http://localhost:8000";
 
-const API_BASE_URL = "https://devoted-mufi-privateselfemployed-e5b94be6.koyeb.app";
+//const API_BASE_URL = "https://devoted-mufi-privateselfemployed-e5b94be6.koyeb.app";
+
+const API_BASE_URL = "https://graceful-jermaine-postalservices-6aca69de.koyeb.app/";
 
 // Hook for managing chat state and sending messages to the backend.
 //dummy line
