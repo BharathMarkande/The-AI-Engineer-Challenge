@@ -132,7 +132,7 @@ vercel
 # - Directory? ./frontend (or just ./ if already in frontend)
 ```
 
-#### Step 3: Configure Environment Variables in Vercel
+#### Step 3: Configure Environment Variables in Vercel (production)
 
 You can set environment variables using either the Vercel Dashboard or the CLI. Choose the method that works best for you.
 
@@ -144,21 +144,8 @@ Set the environment variable directly from the command line:
 # Set for production environment
 vercel env add VITE_API_BASE_URL production
 
-# When prompted, enter your backend API URL (e.g., https://your-backend.vercel.app)
-# Repeat for preview and development environments if needed:
-vercel env add VITE_API_BASE_URL preview
-vercel env add VITE_API_BASE_URL development
+example: VITE_API_BASE_URL= https://your-backend.vercel.app
 ```
-
-Or set it for all environments at once:
-
-```bash
-# Set for all environments (production, preview, development)
-vercel env add VITE_API_BASE_URL
-# When prompted, enter your backend API URL
-# When asked which environments, select: Production, Preview, Development
-```
-
 **Option B: Using Vercel Dashboard**
 
 1. Go to your Vercel dashboard: https://vercel.com/dashboard
