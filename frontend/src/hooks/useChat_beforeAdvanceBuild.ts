@@ -21,18 +21,9 @@ export function useChat() {
       timestamp: new Date()
     };
 
-    // Create assistant message placeholder for streaming.
-    const assistantMessageId = `assistant-${Date.now()}`;
-    const assistantMessage: ChatMessage = {
-      id: assistantMessageId,
-      role: "assistant",
-      content: "",
-      timestamp: new Date()
-    };
-
     setState((prev) => ({
       ...prev,
-      messages: [...prev.messages, userMessage, assistantMessage],
+      messages: [...prev.messages, userMessage],
       loading: true,
       error: null
     }));
@@ -74,66 +65,17 @@ export function useChat() {
         throw new Error(parsedError || `Request failed (${response.status})`);
       }
 
-      // Handle streaming response (Server-Sent Events)
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
+      const data = await response.json();
+      const assistantMessage: ChatMessage = {
+        id: `assistant-${Date.now()}`,
+        role: "assistant",
+        content: data.reply || "No response received.",
+        timestamp: new Date()
+      };
 
-      if (!reader) {
-        throw new Error("Response body is not readable");
-      }
-
-      while (true) {
-        const { done, value } = await reader.read();
-        
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n\n");
-        buffer = lines.pop() || "";
-
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            const data = line.slice(6);
-            try {
-              const parsed = JSON.parse(data);
-              
-              if (parsed.error) {
-                throw new Error(parsed.error);
-              }
-              
-              if (parsed.done) {
-                setState((prev) => ({
-                  ...prev,
-                  loading: false,
-                  error: null
-                }));
-                break;
-              }
-              
-              if (parsed.chunk) {
-                // Update the assistant message with the new chunk
-                setState((prev) => ({
-                  ...prev,
-                  messages: prev.messages.map((msg) =>
-                    msg.id === assistantMessageId
-                      ? { ...msg, content: msg.content + parsed.chunk }
-                      : msg
-                  )
-                }));
-              }
-            } catch (e) {
-              // Skip invalid JSON lines
-              if (e instanceof SyntaxError) continue;
-              throw e;
-            }
-          }
-        }
-      }
-
-      // Final update to ensure loading is false
       setState((prev) => ({
         ...prev,
+        messages: [...prev.messages, assistantMessage],
         loading: false,
         error: null
       }));
@@ -143,10 +85,8 @@ export function useChat() {
           ? error.message
           : "Failed to send message. Please check your backend connection.";
 
-      // Remove the empty assistant message on error
       setState((prev) => ({
         ...prev,
-        messages: prev.messages.filter((msg) => msg.id !== assistantMessageId),
         loading: false,
         error: errorMessage
       }));
