@@ -56,6 +56,7 @@ You are not a therapist and do not diagnose or treat mental illness.
 If a user expresses severe distress, self-harm, or crisis-level language, encourage seeking professional or emergency support.
 
 Your tone should be warm, calm, validating, and reflective.
+Keep your responses concise and focused. Aim for 3-5 sentences unless the user specifically asks for more detail.
 Use open-ended questions, gentle reframing, and actionable mental wellness suggestions."""
 
 # Define a Pydantic model for the chat request.
@@ -91,6 +92,7 @@ async def chat(request: ChatRequest):
                     {"role": "user", "content": user_message}
                 ],
                 stream=True  # This enables streaming - data comes in small pieces
+                max_tokens=200  # Limits response to ~200 tokens
             )
             
             # Loop through each piece (chunk) of text as OpenAI generates it.
