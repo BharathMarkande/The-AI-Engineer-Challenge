@@ -92,7 +92,6 @@ async def chat(request: ChatRequest):
                     {"role": "user", "content": user_message}
                 ],
                 stream=True  # This enables streaming - data comes in small pieces
-                max_tokens=200  # Limits response to ~200 tokens
             )
             
             # Loop through each piece (chunk) of text as OpenAI generates it.
