@@ -62,18 +62,6 @@ export default function App() {
                   <ChatMessage key={message.id} message={message} />
                 ))}
 
-                {loading && (
-                  <div className="mb-4 flex justify-start">
-                    <div className="rounded-2xl bg-white/90 backdrop-blur-sm px-4 py-3 shadow-sm dark:bg-slate-800">
-                      <div className="flex gap-1">
-                        <span className="h-2 w-2 animate-bounce rounded-full bg-slate-500 dark:bg-slate-400 [animation-delay:-0.3s]" />
-                        <span className="h-2 w-2 animate-bounce rounded-full bg-slate-500 dark:bg-slate-400 [animation-delay:-0.15s]" />
-                        <span className="h-2 w-2 animate-bounce rounded-full bg-slate-500 dark:bg-slate-400" />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
                 {error && <ChatError message={error} />}
 
                 <div ref={messagesEndRef} />
